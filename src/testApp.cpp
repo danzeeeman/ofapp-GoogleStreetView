@@ -7,11 +7,11 @@ void testApp::setup(){
     //http://cbk0.google.com/cbk?output=xml&ll=51.494966,-0.146674
     //http://cbk0.google.com/cbk?output=xml&ll=%s,%s
     //
-    data_url = "http://cbk0.google.com/cbk?output=xml&ll=33.748302,-84.397306";//long, lat
+    data_url = "http://cbk0.google.com/cbk?output=xml&ll=40.434006,-79.928601";//long, lat
     
     thumbnail_url = "http://cbk0.google.com/cbk?output=thumbnail&w=640&h=320&panoid=";//width, height, panoid
     
-    zoom_url = "http://cbk0.google.com/cbk?output=tile&panoid=%s&zoom=3&x=%s&y=%s";//PID, ZOOM, X, Y
+    zoom_url = "http://cbk0.google.com/cbk?output=tile&panoid=%s&zoom=4&x=%s&y=%s";//PID, ZOOM, X, Y
     
     
     ofRegisterURLNotification(this);
@@ -19,15 +19,15 @@ void testApp::setup(){
     loading = true;
     
     
-    fbo.allocate(300*6, 300*3, GL_RGB);
+    fbo.allocate(512*12, 512*6, GL_RGB);
     fbo.begin();
     ofClear(0, 0, 0);
     fbo.end();
-    sphere.set(100, 60);
+    sphere.set(1000, 60);
     sphere.setPosition(ofVec3f(0, 0, 0));
     
     sphere.mapTexCoordsFromTexture(fbo.getTextureReference());
-    //    cam.setPosition(0, 0, 0);
+    cam.setPosition(0, 0, 0);
     
 }
 
@@ -59,9 +59,9 @@ void testApp::urlResponse(ofHttpResponse & response){
         data_prop_pano_id = XML.getAttribute("panorama:data_properties", "pano_id", "BLANK");
         if(data_prop_pano_id != "BLANK"){
             thumbnail_url+=data_prop_pano_id;
-            for(int i = 0; i < 3; i++){
-                for(int j = 0; j < 6; j++){
-                    ofLoadURLAsync("http://cbk0.google.com/cbk?output=tile&panoid="+ofToString(data_prop_pano_id)+"&zoom=3&x="+ofToString(j)+"&y="+ofToString(i));
+            for(int i = 0; i < 6; i++){
+                for(int j = 0; j < 12; j++){
+                    ofLoadURLAsync("http://cbk0.google.com/cbk?output=tile&panoid="+ofToString(data_prop_pano_id)+"&zoom=4&x="+ofToString(j)+"&y="+ofToString(i));
                 }
             }
         }
@@ -69,7 +69,7 @@ void testApp::urlResponse(ofHttpResponse & response){
         img.loadImage(response.data);
         
         //you don't have to resize it
-        img.resize(300, 300);
+//        img.resize(300, 300);
         images.push_back(img);
         
         loading = false;
@@ -94,7 +94,7 @@ void testApp::draw(){
             ofSetColor(255, 255, 255);
             for(int i= 0; i < images.size(); i++){
                 images[i].draw(x*images[i].width, y*images[i].width);
-                if(x < 5){
+                if(x < 11){
                     x++;
                 }else{
                     x=0;
